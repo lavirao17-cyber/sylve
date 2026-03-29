@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SYLVĒ</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#18160f;--ink2:#5c5a52;--muted:#9c9a92;
+  --border:#e6e3da;--bg:#faf9f5;--bg2:#f3f1eb;--card:#fff;
+  --gold:#b8963e;--gold2:#f0e4c4;
+  --fd:'Cormorant Garamond',serif;--fs:'DM Sans',sans-serif;
+  --r:10px;--rl:14px;
+}
+body{font-family:var(--fs);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.app{display:flex;flex-direction:column;min-height:100vh;max-width:480px;margin:0 auto;}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+.nav-logo{font-family:var(--fd);font-size:20px;font-weight:300;letter-spacing:5px;color:var(--ink);user-select:none;}
+.nav-logo span{color:var(--gold);}
+
+/* SCREENS */
+.screen{display:none;flex:1;padding:24px 20px 96px;}
+.screen.active{display:block;}
+.sh{margin-bottom:22px;}
+.sh-title{font-family:var(--fd);font-size:28px;font-weight:300;line-height:1.1;color:var(--ink);}
+.sh-title em{font-style:italic;color:var(--gold);}
+.sh-sub{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.5;}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:44px 24px;border:1px dashed var(--border);border-radius:var(--rl);margin-top:8px;}
+.empty-state-title{font-family:var(--fd);font-size:22px;font-weight:300;color:var(--ink);margin-bottom:6px;}
+.empty-state-sub{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* FORM */
+input[type=text],input[type=password],select,textarea{
+  width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:var(--r);
+  font-size:13px;font-family:var(--fs);background:var(--card);color:var(--ink);
+  outline:none;transition:border-color 0.15s;appearance:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+input::placeholder{color:var(--muted);}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239c9a92'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:500;font-family:var(--fs);cursor:pointer;transition:all 0.15s;border:1px solid transparent;white-space:nowrap;}
+.btn-primary{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.btn-primary:hover{opacity:0.85;}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--border);}
+.btn-ghost:hover{border-color:var(--ink2);}
+.btn-gold{background:var(--gold);color:#fff;border-color:var(--gold);}
+.btn-gold:hover{opacity:0.9;}
+.btn-sm{padding:6px 13px;font-size:12px;}
+.btn-full{width:100%;}
+.btn:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-link{background:none;border:none;color:var(--muted);font-size:12px;font-family:var(--fs);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px;}
+.btn-link:hover{color:var(--ink);}
+
+/* CHIPS */
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{padding:5px 12px;border-radius:999px;border:1px solid var(--border);background:transparent;font-size:12px;font-family:var(--fs);color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+/* COUNT BADGE */
+.badge{display:inline-block;background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:1px 8px;font-size:11px;color:var(--muted);margin-left:6px;}
+
+/* WARDROBE */
+.wadd-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.wadd-form input{grid-column:1/-1;}
+.wadd-form-row2{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:16px;align-items:end;}
+.wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.wcard{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;position:relative;transition:border-color 0.15s;}
+.wcard:hover{border-color:var(--muted);}
+.wcard-photo{aspect-ratio:1;width:100%;object-fit:cover;display:block;background:var(--bg2);}
+.wcard-nophoto{aspect-ratio:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2);gap:3px;}
+.wcard-cat-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500;}
+.wcard-addphoto{position:absolute;inset:0;background:rgba(24,22,15,0.38);display:none;align-items:center;justify-content:center;font-size:11px;color:#fff;cursor:pointer;letter-spacing:0.3px;}
+.wcard:hover .wcard-addphoto{display:flex;}
+.wcard-body{padding:6px 8px 8px;}
+.wcard-name{font-size:11px;font-weight:500;color:var(--ink);line-height:1.3;}
+.wcard-tags{font-size:9px;color:var(--muted);margin-top:2px;}
+.wcard-del{position:absolute;top:4px;right:4px;width:18px;height:18px;background:rgba(24,22,15,0.5);border:none;border-radius:50%;font-size:9px;color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.wcard:hover .wcard-del{display:flex;}
+
+/* GENERATE SCREEN */
+.gen-meta-row{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap;}
+.gen-meta-label{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:0.5px;white-space:nowrap;}
+.gen-meta-row select{background:transparent;border:1px solid var(--border);padding:6px 28px 6px 10px;font-size:12px;font-weight:500;color:var(--ink);width:auto;}
+
+.constraints-row{margin-bottom:16px;}
+.constraints-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:7px;}
+.constraint-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.cchip{padding:5px 12px;border-radius:999px;border:1px solid var(--border);background:transparent;font-size:11px;font-family:var(--fs);color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.cchip.active{background:var(--bg2);color:var(--ink);border-color:var(--ink2);}
+
+/* OUTFIT CARDS */
+.outfit-stack{display:flex;flex-direction:column;gap:10px;}
+.ocard{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;animation:fadeUp 0.28s ease both;}
+.ocard.tier-elevated{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold2);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ocard:nth-child(1){animation-delay:0.04s}
+.ocard:nth-child(2){animation-delay:0.1s}
+.ocard:nth-child(3){animation-delay:0.17s}
+
+.ocard-head{padding:13px 15px 8px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.ocard-tier{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;color:var(--muted);}
+.tier-elevated .ocard-tier{color:var(--gold);}
+.ocard-title{font-family:var(--fd);font-size:19px;font-weight:300;color:var(--ink);margin-top:1px;line-height:1.1;}
+.ocard-sentence{font-size:12px;color:var(--ink2);line-height:1.5;font-style:italic;margin-top:4px;}
+.ocard-sentence.loading{color:var(--muted);animation:blink 1.2s infinite;}
+@keyframes blink{0%,100%{opacity:0.3}50%{opacity:1}}
+.ocard-balance{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:0.2px;}
+
+.ocard-items{padding:0 15px 10px;display:flex;flex-direction:column;gap:5px;}
+.ocard-item{display:flex;align-items:center;gap:9px;padding:6px 9px;background:var(--bg2);border-radius:7px;}
+.ocard-thumb{width:32px;height:32px;border-radius:6px;flex-shrink:0;overflow:hidden;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.ocard-thumb img{width:100%;height:100%;object-fit:cover;}
+.ocard-item-info{}
+.ocard-item-name{font-size:12px;font-weight:500;color:var(--ink);}
+.ocard-item-meta{font-size:10px;color:var(--muted);margin-top:1px;}
+
+.ocard-actions{padding:9px 15px 12px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;}
+.ocard-left-actions{display:flex;gap:6px;align-items:center;}
+.rate-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all 0.15s;}
+.rate-btn:hover{border-color:var(--ink);}
+.rate-btn.liked{background:#e8f5e9;border-color:#4caf50;}
+.rate-btn.disliked{background:#fce4ec;border-color:#e91e63;}
+.refine-btn{font-size:11px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:var(--fs);transition:all 0.15s;}
+.refine-btn:hover{color:var(--ink);border-color:var(--ink2);}
+.ocard-save{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--fs);transition:color 0.15s;padding:3px 0;}
+.ocard-save:hover{color:var(--ink);}
+.ocard-save.saved{color:var(--gold);}
+.ocard-save svg{width:13px;height:13px;flex-shrink:0;}
+
+/* INSUFFICIENT */
+.insufficient{padding:18px;background:var(--bg2);border-radius:var(--rl);border:1px solid var(--border);margin-bottom:14px;}
+.insufficient-title{font-size:13px;font-weight:500;margin-bottom:5px;}
+.insufficient-sub{font-size:12px;color:var(--muted);line-height:1.5;}
+.gap-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.gap-pill{padding:3px 10px;border-radius:999px;font-size:11px;background:var(--card);border:1px solid var(--border);color:var(--ink2);}
+
+/* SAVED */
+.saved-grid{display:flex;flex-direction:column;gap:10px;}
+.saved-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:13px 15px;}
+.saved-card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px;}
+.saved-tier{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:500;}
+.saved-title{font-family:var(--fd);font-size:18px;font-weight:300;color:var(--ink);}
+.saved-date{font-size:10px;color:var(--muted);margin-top:1px;}
+.saved-del{background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;padding:3px;}
+.saved-del:hover{color:var(--ink);}
+.saved-items{display:flex;flex-wrap:wrap;gap:4px;}
+.saved-tag{padding:2px 9px;background:var(--bg2);border-radius:999px;font-size:11px;color:var(--ink2);}
+.saved-sentence{font-size:11px;color:var(--muted);font-style:italic;margin-top:7px;}
+
+/* API */
+.api-area{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;}
+.api-area-label{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5;}
+.api-row{display:flex;gap:8px;}
+.api-row input{flex:1;font-family:monospace;font-size:12px;}
+
+.memory-note{font-size:11px;color:var(--muted);margin-top:14px;text-align:center;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg);border-top:1px solid var(--border);display:flex;z-index:50;}
+.bnav-btn{flex:1;padding:14px 0 12px;display:flex;flex-direction:column;align-items:center;gap:0;background:none;border:none;cursor:pointer;transition:color 0.15s;color:var(--muted);}
+.bnav-btn.active{color:var(--ink);}
+.bnav-icon{display:none;}
+.bnav-label{font-size:10px;letter-spacing:0.5px;font-weight:500;text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav class="nav">
+  <div class="nav-logo">S<span>Y</span>LVĒ</div>
+</nav>
+
+<!-- WARDROBE -->
+<div class="screen" id="screen-wardrobe">
+  <div class="sh">
+    <div class="sh-title">Closet <span class="badge" id="w-count">0</span></div>
+    <div class="sh-sub">Add your pieces. Silhouette and color guide the outfit engine.</div>
+  </div>
+
+  <div class="wadd-form">
+    <input type="text" id="item-name" placeholder="e.g. White linen shirt"/>
+  </div>
+  <div class="wadd-form-row2">
+    <select id="item-cat">
+      <option value="top">Top</option>
+      <option value="bottom">Bottom</option>
+      <option value="dress">Dress</option>
+      <option value="layer">Layer</option>
+      <option value="shoes">Shoes</option>
+      <option value="bag">Bag</option>
+      <option value="accessory">Accessory</option>
+    </select>
+    <select id="item-sil">
+      <option value="fitted">Fitted</option>
+      <option value="loose">Loose</option>
+      <option value="structured">Structured</option>
+      <option value="flowy">Flowy</option>
+      <option value="minimal">Minimal</option>
+    </select>
+    <select id="item-color">
+      <option value="neutral">Neutral</option>
+      <option value="warm">Warm</option>
+      <option value="cool">Cool</option>
+      <option value="accent">Accent</option>
+    </select>
+    <button class="btn btn-primary" onclick="addItem()">Add piece</button>
+  </div>
+
+  <div class="chip-row" id="w-chips">
+    <button class="chip active" onclick="wFilter('all',this)">All</button>
+    <button class="chip" onclick="wFilter('top',this)">Tops</button>
+    <button class="chip" onclick="wFilter('bottom',this)">Bottoms</button>
+    <button class="chip" onclick="wFilter('dress',this)">Dresses</button>
+    <button class="chip" onclick="wFilter('layer',this)">Layers</button>
+    <button class="chip" onclick="wFilter('shoes',this)">Shoes</button>
+    <button class="chip" onclick="wFilter('bag',this)">Bags</button>
+    <button class="chip" onclick="wFilter('accessory',this)">Accessories</button>
+  </div>
+
+  <div class="wgrid" id="wardrobe-grid"></div>
+</div>
+
+<!-- GENERATE -->
+<div class="screen active" id="screen-generate">
+  <div class="sh">
+    <div class="sh-title">Today's <em>looks.</em></div>
+  </div>
+
+  <div class="gen-meta-row">
+    <span class="gen-meta-label">Style</span>
+    <select id="vibe-sel" onchange="saveVibe()">
+      <option value="goddess">Goddess</option>
+      <option value="clean">Clean girl</option>
+      <option value="baddie">Baddie</option>
+      <option value="coastal">Coastal</option>
+    </select>
+  </div>
+
+  <div class="constraints-row">
+    <div class="constraints-label">Context</div>
+    <div class="constraint-chips">
+      <button class="cchip" data-group="temp" data-val="hot"   onclick="toggleConstraint(this)">Hot</button>
+      <button class="cchip" data-group="temp" data-val="mild"  onclick="toggleConstraint(this)">Mild</button>
+      <button class="cchip" data-group="temp" data-val="cold"  onclick="toggleConstraint(this)">Cold</button>
+      <button class="cchip" data-group="occ"  data-val="casual"    onclick="toggleConstraint(this)">Casual</button>
+      <button class="cchip" data-group="occ"  data-val="dinner"    onclick="toggleConstraint(this)">Dinner</button>
+      <button class="cchip" data-group="occ"  data-val="going out" onclick="toggleConstraint(this)">Going out</button>
+    </div>
+  </div>
+
+  <button class="btn btn-gold btn-full" id="gen-btn" onclick="generate()" style="margin-bottom:16px;">Get dressed</button>
+
+  <div style="margin-bottom:16px;text-align:right;">
+    <button onclick="document.getElementById('api-area').style.display=document.getElementById('api-area').style.display==='none'?'block':'none'" style="background:none;border:none;font-size:11px;color:var(--muted);cursor:pointer;font-family:var(--fs);letter-spacing:0.3px;" id="api-toggle">AI context</button>
+  </div>
+  <div class="api-area" id="api-area" style="display:none;">
+    <div class="api-area-label">Paste your Anthropic key to add a one-line styling note per outfit.</div>
+    <div class="api-row">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..."/>
+      <button class="btn btn-ghost btn-sm" onclick="saveApiKey()">Save</button>
+    </div>
+  </div>
+
+  <div id="gen-output"></div>
+</div>
+
+<!-- SAVED -->
+<div class="screen" id="screen-saved">
+  <div class="sh">
+    <div class="sh-title">Saved <em>looks</em> <span class="badge" id="s-count">0</span></div>
+  </div>
+  <div class="saved-grid" id="saved-grid"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bnav-btn" onclick="goScreen('wardrobe',this)" id="bnav-wardrobe">
+    <span class="bnav-label">Closet</span>
+  </button>
+  <button class="bnav-btn active" onclick="goScreen('generate',this)" id="bnav-generate">
+    <span class="bnav-label">Looks</span>
+  </button>
+  <button class="bnav-btn" onclick="goScreen('saved',this)" id="bnav-saved">
+    <span class="bnav-label">Saved</span>
+  </button>
+</nav>
+</div>
+
+<script>
+/* ═══════════════════════
+   CONSTANTS & ICONS
+═══════════════════════ */
+const CAT_ICON = {top:'Top',bottom:'Bottom',dress:'Dress',layer:'Layer',shoes:'Shoes',bag:'Bag',accessory:'Acc'};
+const TIER_LABEL = {easy:'Effortless',elevated:'Considered',statement:'Intentional'};
+const TIER_TITLE = {easy:'Reaches for itself.',elevated:'Worth the extra minute.',statement:'Owns the room.'};
+
+/* ═══════════════════════
+   OUTFIT TEMPLATES
+   slots: array of {cat, sil_allow, sil_exclude, optional}
+═══════════════════════ */
+const TEMPLATES = [
+  {
+    id:'T1', name:'Fitted + loose + clean', tiers:['easy','elevated'],
+    slots:[
+      {cat:'top',    sil_pref:['fitted'],   sil_ban:['loose']},
+      {cat:'bottom', sil_pref:['loose','flowy'], sil_ban:['fitted']},
+      {cat:'shoes',  sil_pref:['minimal','structured'], sil_ban:[]},
+    ],
+    optSlots:[
+      {cat:'bag',       sil_pref:['minimal','structured'], optional:true},
+      {cat:'accessory', sil_pref:['minimal'],              optional:true},
+    ]
+  },
+  {
+    id:'T2', name:'Fitted + fitted + statement shoe', tiers:['elevated','statement'],
+    slots:[
+      {cat:'top',    sil_pref:['fitted'],   sil_ban:['loose','flowy']},
+      {cat:'bottom', sil_pref:['fitted'],   sil_ban:['loose']},
+      {cat:'shoes',  sil_pref:['structured'], sil_ban:['minimal']},
+    ],
+    optSlots:[
+      {cat:'bag',       sil_pref:['structured','minimal'], optional:true},
+      {cat:'accessory', sil_pref:['minimal'],              optional:true},
+    ]
+  },
+  {
+    id:'T3', name:'Dress + minimal', tiers:['easy','elevated'],
+    slots:[
+      {cat:'dress', sil_pref:['flowy','minimal','fitted'], sil_ban:[]},
+      {cat:'shoes', sil_pref:['minimal','structured'],     sil_ban:[]},
+    ],
+    optSlots:[
+      {cat:'accessory', sil_pref:['minimal'],              optional:true},
+      {cat:'bag',       sil_pref:['minimal','structured'], optional:true},
+    ]
+  },
+  {
+    id:'T4', name:'Base + layer + clean shoe', tiers:['elevated'],
+    slots:[
+      {cat:'top',    sil_pref:['fitted','minimal'], sil_ban:[]},
+      {cat:'bottom', sil_pref:['loose','fitted'],   sil_ban:[]},
+      {cat:'layer',  sil_pref:['structured','loose'], sil_ban:[]},
+      {cat:'shoes',  sil_pref:['minimal','structured'], sil_ban:[]},
+    ],
+    optSlots:[
+      {cat:'bag', sil_pref:['structured','minimal'], optional:true},
+    ]
+  },
+  {
+    id:'T5', name:'Complete outfit + bag', tiers:['elevated','statement'],
+    slots:[
+      {cat:'top',    sil_pref:['fitted'],   sil_ban:[]},
+      {cat:'bottom', sil_pref:['fitted','loose'], sil_ban:[]},
+      {cat:'bag',    sil_pref:['structured'], sil_ban:[]},
+      {cat:'shoes',  sil_pref:['structured'], sil_ban:[]},
+    ],
+    optSlots:[
+      {cat:'accessory', sil_pref:['minimal'], optional:true},
+    ]
+  },
+  {
+    id:'T6', name:'Dress + layer + shoe', tiers:['statement','elevated'],
+    slots:[
+      {cat:'dress',  sil_pref:['fitted','flowy'], sil_ban:[]},
+      {cat:'layer',  sil_pref:['structured'],     sil_ban:['loose']},
+      {cat:'shoes',  sil_pref:['structured'],     sil_ban:[]},
+    ],
+    optSlots:[
+      {cat:'bag',       sil_pref:['structured'], optional:true},
+      {cat:'accessory', sil_pref:['minimal'],    optional:true},
+    ]
+  },
+];
+
+
+/* ═══════════════════════
+   DEMO MODE
+   Transparent: feels identical to normal use.
+   activeWardrobe() returns demo items when user
+   has none; real items otherwise.
+   Auto-exits the moment user adds any real item.
+═══════════════════════ */
+const DEMO_WARDROBE = [
+  {id:9001,name:'White fitted tee',      cat:'top',       sil:'fitted',    color:'neutral', photo:null},
+  {id:9002,name:'Ivory linen shirt',     cat:'top',       sil:'loose',     color:'neutral', photo:null},
+  {id:9003,name:'Black crop top',        cat:'top',       sil:'fitted',    color:'neutral', photo:null},
+  {id:9004,name:'Satin cami',            cat:'top',       sil:'minimal',   color:'warm',    photo:null},
+  {id:9005,name:'High-waist trousers',   cat:'bottom',    sil:'structured',color:'neutral', photo:null},
+  {id:9006,name:'Wide-leg jeans',        cat:'bottom',    sil:'loose',     color:'neutral', photo:null},
+  {id:9007,name:'Mini skirt',            cat:'bottom',    sil:'fitted',    color:'accent',  photo:null},
+  {id:9008,name:'Slip midi dress',       cat:'dress',     sil:'flowy',     color:'neutral', photo:null},
+  {id:9009,name:'Fitted ribbed dress',   cat:'dress',     sil:'fitted',    color:'warm',    photo:null},
+  {id:9010,name:'Beige trench coat',     cat:'layer',     sil:'structured',color:'neutral', photo:null},
+  {id:9011,name:'Oversized blazer',      cat:'layer',     sil:'structured',color:'neutral', photo:null},
+  {id:9012,name:'White sneakers',        cat:'shoes',     sil:'minimal',   color:'neutral', photo:null},
+  {id:9013,name:'Strappy heels',         cat:'shoes',     sil:'minimal',   color:'neutral', photo:null},
+  {id:9014,name:'Pointed mules',         cat:'shoes',     sil:'structured',color:'neutral', photo:null},
+  {id:9015,name:'Mini leather bag',      cat:'bag',       sil:'structured',color:'neutral', photo:null},
+  {id:9016,name:'Gold hoop earrings',    cat:'accessory', sil:'minimal',   color:'accent',  photo:null},
+  {id:9017,name:'Delicate gold necklace',cat:'accessory', sil:'minimal',   color:'accent',  photo:null},
+];
+
+// isDemo: true only when wardrobe is fully empty (controls demo label)
+function isDemo() { return wardrobe.length === 0; }
+
+// isHybrid: true when user has 1–4 items — blend user + demo, user items prioritised
+function isHybrid() { return wardrobe.length > 0 && wardrobe.length < 5; }
+
+// activeWardrobe: the full item pool the engine draws from
+//   empty       → pure demo (17 items)
+//   1–4 items   → user items + demo items (user items will always score higher)
+//   5+ items    → user items only
+function activeWardrobe() {
+  if (wardrobe.length === 0)  return DEMO_WARDROBE;
+  if (wardrobe.length < 5) {
+    // Merge: user items first, then demo items that don't duplicate a category
+    // already well-covered by the user.
+    const userCats = new Set(wardrobe.map(i => i.cat));
+    // Include ALL demo items — scoring will naturally surface user items first
+    return [...wardrobe, ...DEMO_WARDROBE];
+  }
+  return wardrobe;
+}
+
+// isUserItem: true for items the user actually added (not demo fill)
+function isUserItem(item) { return item.id < 9000; }
+
+/* ═══════════════════════
+   STATE
+═══════════════════════ */
+let wardrobe   = JSON.parse(localStorage.getItem('s_wardrobe') || '[]');
+let savedLooks = JSON.parse(localStorage.getItem('s_saved')    || '[]');
+let memory     = JSON.parse(localStorage.getItem('s_memory')   || JSON.stringify({
+  dislikedCombos:[], likedCombos:[], sessionCombos:[],
+  patternLikes:{}, patternDislikes:{}
+}));
+let vibe     = localStorage.getItem('s_vibe')  || 'goddess';
+let apiKey   = localStorage.getItem('s_key')   || '';
+let nid      = parseInt(localStorage.getItem('s_nid') || '1');
+let wf       = 'all';
+let constraints = { temp: null, occ: null };
+let currentOutfits = [];
+let pendingUpId = null;
+
+function persist() {
+  localStorage.setItem('s_wardrobe', JSON.stringify(wardrobe));
+  localStorage.setItem('s_saved',    JSON.stringify(savedLooks));
+  localStorage.setItem('s_memory',   JSON.stringify(memory));
+  localStorage.setItem('s_vibe',     vibe);
+  localStorage.setItem('s_nid',      String(nid));
+}
+
+/* ═══════════════════════
+   COLOR COHERENCE CHECK
+═══════════════════════ */
+function colorCheck(items, tier) {
+  const colors = items.map(i => i.color);
+  const accents = colors.filter(c => c === 'accent').length;
+  const nonNeutrals = colors.filter(c => c !== 'neutral').length;
+  if (tier === 'easy') {
+    // max 1 accent, rest neutral
+    return accents <= 1 && nonNeutrals <= 1;
+  }
+  if (tier === 'elevated') {
+    // neutrals + 1 warm or cool, max 1 accent
+    return accents <= 1 && nonNeutrals <= 2;
+  }
+  if (tier === 'statement') {
+    // exactly one focal non-neutral, rest neutral
+    const focalCount = colors.filter(c => c !== 'neutral').length;
+    return focalCount === 1;
+  }
+  return true;
+}
+
+/* ═══════════════════════
+   SILHOUETTE BALANCE CHECK
+═══════════════════════ */
+function silhouetteCheck(items) {
+  const sils = items.map(i => i.sil);
+  const looseCount    = sils.filter(s => s === 'loose' || s === 'flowy').length;
+  const fittedCount   = sils.filter(s => s === 'fitted').length;
+  const structCount   = sils.filter(s => s === 'structured').length;
+  const bulkyCount    = sils.filter(s => s === 'loose' || s === 'structured').length;
+
+  // Reject loose+loose+any-layer
+  const layers = items.filter(i => i.cat === 'layer');
+  if (looseCount >= 2 && layers.length > 0) return false;
+  // Reject fitted+fitted+structured-layer (stiff stack)
+  if (fittedCount >= 2 && structCount >= 1 && layers.length >= 1) return false;
+  // Reject 3+ bulky items
+  if (bulkyCount >= 3) return false;
+  return true;
+}
+
+/* ═══════════════════════
+   COMPLEXITY CHECK
+   Not too many focal points
+═══════════════════════ */
+function complexityCheck(items, tier) {
+  const accItems = items.filter(i => i.color === 'accent' || i.color !== 'neutral');
+  if (tier === 'easy'      && accItems.length > 1) return false;
+  if (tier === 'elevated'  && accItems.length > 2) return false;
+  if (tier === 'statement' && accItems.length > 2) return false;
+  return true;
+}
+
+function passesAllChecks(items, tier) {
+  return colorCheck(items, tier) && silhouetteCheck(items) && complexityCheck(items, tier);
+}
+
+/* ═══════════════════════
+   PATTERN MEMORY SCORING
+═══════════════════════ */
+function extractPairs(items) {
+  const pairs = [];
+  for (let i = 0; i < items.length; i++)
+    for (let j = i+1; j < items.length; j++)
+      pairs.push([items[i].cat, items[j].cat].sort().join('+'));
+  return pairs;
+}
+
+function patternScore(items) {
+  let score = 0;
+  const pairs = extractPairs(items);
+  for (const p of pairs) {
+    score += (memory.patternLikes[p]   || 0) * 0.3;
+    score -= (memory.patternDislikes[p]|| 0) * 0.5;
+  }
+  return score;
+}
+
+function recordPatterns(items, type) {
+  const pairs = extractPairs(items);
+  for (const p of pairs) {
+    if (type === 'liked') {
+      memory.patternLikes[p] = (memory.patternLikes[p] || 0) + 1;
+    } else {
+      memory.patternDislikes[p] = (memory.patternDislikes[p] || 0) + 1;
+    }
+  }
+}
+
+/* ═══════════════════════
+   VIBE SCORING
+═══════════════════════ */
+const VIBE_W = {
+  goddess:  {accessory:1.6,layer:1.3,dress:1.4,shoes:1.3,bag:1.1,top:1.0,bottom:1.0,
+             sil:{flowy:1.5,fitted:1.2,loose:1.0,structured:0.9,minimal:1.1}},
+  clean:    {accessory:0.6,layer:0.9,dress:1.1,shoes:1.1,bag:1.2,top:1.0,bottom:1.0,
+             sil:{minimal:1.6,fitted:1.3,structured:1.2,loose:0.8,flowy:0.8}},
+  baddie:   {accessory:1.4,shoes:1.5,bag:1.2,top:1.1,bottom:1.1,dress:1.2,layer:0.8,
+             sil:{fitted:1.6,structured:1.3,minimal:1.0,loose:0.7,flowy:0.8}},
+  coastal:  {layer:1.5,bag:1.3,accessory:1.1,shoes:1.2,top:1.0,bottom:1.0,dress:1.1,
+             sil:{loose:1.5,flowy:1.4,minimal:1.1,fitted:0.9,structured:0.8}},
+};
+
+function scoreItem(item, tier) {
+  const w = VIBE_W[vibe] || VIBE_W.goddess;
+  let s = 1;
+  s *= (w[item.cat] || 1);
+  s *= (w.sil?.[item.sil] || 1);
+  // tier-level color preference
+  if (tier === 'easy'      && item.color === 'neutral') s *= 1.4;
+  if (tier === 'statement' && item.color !== 'neutral') s *= 1.4;
+  if (tier === 'elevated') s *= 1.1;
+  // pattern memory
+  return s;
+}
+
+/* ═══════════════════════
+   CONSTRAINT FILTERING
+═══════════════════════ */
+function applyConstraints(pool, slot) {
+  const { temp, occ } = constraints;
+  return pool.filter(item => {
+    // Temperature
+    if (temp === 'hot'  && item.cat === 'layer') return false;
+    if (temp === 'cold' && item.cat === 'layer') return true; // layers required — don't filter out
+    // Occasion
+    if (occ === 'casual') {
+      if (item.cat === 'shoes' && item.sil === 'structured') return false;
+    }
+    if (occ === 'dinner' || occ === 'going out') {
+      if (item.cat === 'shoes' && item.sil === 'minimal' && item.color === 'neutral') {
+        // Allow but deprioritize — don't remove
+      }
+    }
+    return true;
+  });
+}
+
+function needsLayer() {
+  return constraints.temp === 'cold';
+}
+
+/* ═══════════════════════
+   TEMPLATE FILLER
+═══════════════════════ */
+function comboHash(items) { return items.map(i=>i.id).sort().join(','); }
+function wasDisliked(items){ return memory.dislikedCombos.includes(comboHash(items)); }
+function wasSession(items) { return memory.sessionCombos.includes(comboHash(items)); }
+
+function getByCat(cat, tier, excludeIds = new Set()) {
+  let pool = activeWardrobe().filter(i => i.cat === cat && !excludeIds.has(i.id));
+  pool = applyConstraints(pool, cat);
+  return pool
+    .map(i => {
+      let s = scoreItem(i, tier);
+      // In hybrid mode, user items always score higher than demo fills
+      // This guarantees user items are picked first for every slot
+      if (isHybrid() && isUserItem(i)) s *= 3;
+      return {...i, _score: s};
+    })
+    .sort((a,b) => b._score - a._score);
+}
+
+function fillSlot(slot, tier, excludeIds) {
+  const pool = getByCat(slot.cat, tier, excludeIds);
+  // prefer sil_pref, avoid sil_ban
+  const preferred = pool.filter(i =>
+    slot.sil_pref.length === 0 || slot.sil_pref.includes(i.sil)
+  ).filter(i => !slot.sil_ban.includes(i.sil));
+  const fallback = pool.filter(i => !slot.sil_ban.includes(i.sil));
+  const candidates = preferred.length ? preferred : fallback;
+  return candidates.length ? candidates[0] : null;
+}
+
+function tryFillTemplate(template, tier, globalExcludeIds = new Set(), offset = 0) {
+  // offset lets refine() try the next-best candidate
+  const usedIds = new Set(globalExcludeIds);
+  const filled = [];
+
+  for (const slot of template.slots) {
+    // If cold, force a layer slot to exist
+    if (needsLayer() && slot.cat === 'layer') {
+      // Layer is required — don't skip
+    }
+    const pool = getByCat(slot.cat, tier, usedIds)
+      .filter(i => slot.sil_pref.length === 0 || slot.sil_pref.includes(i.sil))
+      .filter(i => !slot.sil_ban.includes(i.sil));
+    const fallback = getByCat(slot.cat, tier, usedIds)
+      .filter(i => !slot.sil_ban.includes(i.sil));
+    const candidates = pool.length ? pool : fallback;
+    if (!candidates.length) return null; // template not satisfiable
+    const idx = Math.min(offset, candidates.length - 1);
+    const chosen = candidates[idx];
+    filled.push(chosen);
+    usedIds.add(chosen.id);
+  }
+
+  // Add optional slots based on tier
+  const optCount = tier === 'easy' ? 0 : tier === 'elevated' ? 1 : 2;
+  let added = 0;
+  for (const oSlot of (template.optSlots || [])) {
+    if (added >= optCount) break;
+    const pool = getByCat(oSlot.cat, tier, usedIds)
+      .filter(i => oSlot.sil_pref.length === 0 || oSlot.sil_pref.includes(i.sil));
+    if (pool.length) { filled.push(pool[0]); usedIds.add(pool[0].id); added++; }
+  }
+
+  return filled;
+}
+
+
+/* ═══════════════════════
+   RICHNESS CHECK
+   Every outfit needs at least one elevated element:
+   a layer, accessory, bag, non-neutral color, or
+   silhouette contrast (fitted+loose/flowy).
+   Rejects basic-only combinations.
+═══════════════════════ */
+function hasElevatedElement(items) {
+  // Has a layer
+  if (items.some(i => i.cat === 'layer'))     return true;
+  // Has an accessory
+  if (items.some(i => i.cat === 'accessory')) return true;
+  // Has a structured bag
+  if (items.some(i => i.cat === 'bag' && i.sil === 'structured')) return true;
+  // Has a non-neutral color item (adds visual interest)
+  if (items.some(i => i.color !== 'neutral')) return true;
+  // Silhouette contrast: fitted paired with loose or flowy
+  const sils = items.map(i => i.sil);
+  if (sils.includes('fitted') && (sils.includes('loose') || sils.includes('flowy'))) return true;
+  // Structured shoes (elevate a simple combo)
+  if (items.some(i => i.cat === 'shoes' && i.sil === 'structured')) return true;
+  return false;
+}
+
+/* ═══════════════════════
+   OUTFIT BUILDER
+═══════════════════════ */
+function buildOutfitForTier(tier, globalExcludeIds = new Set()) {
+  // Get templates valid for this tier
+  let templates = TEMPLATES.filter(t => t.tiers.includes(tier));
+
+  // If cold, prefer templates with layer slots
+  if (needsLayer()) {
+    const withLayer = templates.filter(t => t.slots.some(s => s.cat === 'layer'));
+    if (withLayer.length) templates = withLayer;
+  }
+  // If hot, prefer templates without layer slots
+  if (constraints.temp === 'hot') {
+    const noLayer = templates.filter(t => !t.slots.some(s => s.cat === 'layer'));
+    if (noLayer.length) templates = noLayer;
+  }
+
+  // Score templates by pattern memory
+  templates = templates.map(t => {
+    const mockItems = t.slots.map(s => ({cat: s.cat, sil: s.sil_pref[0] || 'minimal', color: 'neutral', id: -1}));
+    return {...t, _tmplScore: patternScore(mockItems)};
+  }).sort((a,b) => b._tmplScore - a._tmplScore);
+
+  for (const template of templates) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const items = tryFillTemplate(template, tier, globalExcludeIds, attempt);
+      if (!items) continue;
+      if (!passesAllChecks(items, tier)) continue;
+      if (wasDisliked(items) || wasSession(items)) continue;
+      if (!hasElevatedElement(items)) continue; // reject basic-only combos
+      return { items, templateId: template.id };
+    }
+  }
+
+  // Fallback: relax checks, return best available
+  for (const template of templates) {
+    const items = tryFillTemplate(template, tier, globalExcludeIds, 0);
+    if (items) return { items, templateId: template.id };
+  }
+
+  return null;
+}
+
+function detectGaps() {
+  const aw = activeWardrobe();
+  const has = cat => aw.some(i => i.cat === cat);
+  const canBase = (has('top') && has('bottom')) || has('dress');
+  if (!canBase) {
+    const missing = [];
+    if (!has('top') && !has('dress')) missing.push('top or dress');
+    if (!has('bottom') && !has('dress')) missing.push('bottom');
+    return missing;
+  }
+  if (!has('shoes')) return ['shoes'];
+  return [];
+}
+
+function generate() {
+  const gaps = detectGaps();
+  if (gaps.length) { renderInsufficient(gaps); return; }
+
+  // Run computation immediately (synchronous)
+  memory.sessionCombos = [];
+  currentOutfits = [];
+  const tiers = ['easy','elevated','statement'];
+  const usedIds = new Set();
+
+  for (const tier of tiers) {
+    const result = buildOutfitForTier(tier, usedIds);
+    if (result) {
+      const o = {
+        id: Date.now() + Math.random(),
+        tier, templateId: result.templateId,
+        items: result.items,
+        sentence: null, rating: null, saved: false
+      };
+      result.items.forEach(i => usedIds.add(i.id));
+      memory.sessionCombos.push(comboHash(result.items));
+      currentOutfits.push(o);
+    }
+  }
+
+  persist();
+
+  // Show a brief loading phrase, then reveal
+  const out = document.getElementById('gen-output');
+  const btn = document.getElementById('gen-btn');
+  out.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:20px 0;letter-spacing:0.2px;">Pulling something together…</p>';
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+
+  setTimeout(() => {
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+    renderOutfits();
+    if (apiKey) currentOutfits.forEach(fetchSentence);
+  }, 700);
+}
+
+/* ═══════════════════════
+   REFINE (swap worst slot)
+═══════════════════════ */
+function refineOutfit(outfitId) {
+  const outfit = currentOutfits.find(o => String(o.id) === String(outfitId));
+  if (!outfit) return;
+
+  const template = TEMPLATES.find(t => t.id === outfit.templateId);
+  if (!template) { generate(); return; }
+
+  // Find the slot with lowest score (worst fit)
+  let worstSlotIdx = 0, worstScore = Infinity;
+  outfit.items.forEach((item, i) => {
+    const s = scoreItem(item, outfit.tier) + patternScore([item]);
+    if (s < worstScore) { worstScore = s; worstSlotIdx = i; }
+  });
+
+  // Try swapping that one slot
+  const newItems = [...outfit.items];
+  const slotToSwap = newItems[worstSlotIdx];
+  const excludeIds = new Set(newItems.map(i => i.id));
+  excludeIds.delete(slotToSwap.id); // allow same category items
+
+  const pool = getByCat(slotToSwap.cat, outfit.tier, excludeIds)
+    .filter(i => i.id !== slotToSwap.id);
+
+  if (pool.length) {
+    newItems[worstSlotIdx] = pool[0];
+    if (passesAllChecks(newItems, outfit.tier) && !wasDisliked(newItems)) {
+      outfit.items = newItems;
+      outfit.sentence = null;
+      memory.sessionCombos.push(comboHash(newItems));
+      persist();
+      renderOutfits();
+      if (apiKey) fetchSentence(outfit);
+      return;
+    }
+  }
+
+  // Can't refine this tier — regenerate just this tier
+  const allIds = new Set(currentOutfits.filter(o=>o.id !== outfit.id).flatMap(o=>o.items.map(i=>i.id)));
+  const result = buildOutfitForTier(outfit.tier, allIds);
+  if (result) {
+    outfit.items = result.items; outfit.templateId = result.templateId; outfit.sentence = null;
+    memory.sessionCombos.push(comboHash(result.items));
+    persist(); renderOutfits();
+    if (apiKey) fetchSentence(outfit);
+  }
+}
+
+/* ═══════════════════════
+   AI SENTENCE
+═══════════════════════ */
+async function fetchSentence(outfit) {
+  const el = document.getElementById(`sentence-${outfit.id}`);
+  if (el) { el.textContent = '...'; el.className = 'ocard-sentence loading'; }
+  const names = outfit.items.map(i => i.name).join(', ');
+  const prompt = `You are a concise personal stylist. Write exactly one sentence (max 10 words) explaining why this outfit works. No fluff. Sound like a stylist texting a friend.
+Vibe: ${vibe}
+Tier: ${TIER_LABEL[outfit.tier]}
+Items: ${names}
+Respond with ONLY the sentence. No quotes.`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:60,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const txt = data.content?.[0]?.text?.trim() || '';
+    outfit.sentence = txt;
+    if (el) { el.textContent = txt; el.className = 'ocard-sentence'; }
+  } catch { if (el) { el.textContent=''; el.className='ocard-sentence'; } }
+}
+
+
+/* ═══════════════════════
+   ITEM NOTE
+   Converts raw attributes into a short
+   human-readable stylist note.
+═══════════════════════ */
+function itemNote(item) {
+  const { cat, sil, color } = item;
+
+  // Color adjective — only mention if non-neutral
+  const colorWord = {
+    warm:   'warm tone',
+    cool:   'cool tone',
+    accent: 'statement colour',
+    neutral: ''
+  }[color] || '';
+
+  // Silhouette + category pairings → natural phrase
+  const map = {
+    'top-fitted':       'fitted',
+    'top-loose':        'relaxed',
+    'top-flowy':        'soft',
+    'top-minimal':      'clean cut',
+    'top-structured':   'tailored',
+    'bottom-fitted':    'slim fit',
+    'bottom-loose':     'wide leg',
+    'bottom-flowy':     'fluid',
+    'bottom-structured':'tailored',
+    'bottom-minimal':   'clean',
+    'dress-fitted':     'fitted dress',
+    'dress-flowy':      'fluid dress',
+    'dress-loose':      'relaxed dress',
+    'dress-minimal':    'minimal dress',
+    'dress-structured': 'structured dress',
+    'layer-structured': 'sharp layer',
+    'layer-loose':      'oversized layer',
+    'layer-fitted':     'fitted layer',
+    'layer-minimal':    'light layer',
+    'layer-flowy':      'draped layer',
+    'shoes-minimal':    'clean shoes',
+    'shoes-structured': 'statement shoes',
+    'shoes-fitted':     'sleek shoes',
+    'shoes-loose':      'casual shoes',
+    'shoes-flowy':      'delicate shoes',
+    'bag-structured':   'structured bag',
+    'bag-minimal':      'minimal bag',
+    'bag-fitted':       'compact bag',
+    'bag-loose':        'relaxed bag',
+    'bag-flowy':        'soft bag',
+    'accessory-minimal':'delicate',
+    'accessory-accent': 'statement piece',
+    'accessory-structured':'bold accent',
+    'accessory-fitted': 'refined detail',
+    'accessory-loose':  'layered detail',
+  };
+
+  const key = `${cat}-${sil}`;
+  const base = map[key] || cat;
+
+  // Combine: if accent color and not already described, append it
+  if (colorWord && color === 'accent' && !base.includes('statement')) {
+    return base + ' · ' + colorWord;
+  }
+  return base;
+}
+
+/* ═══════════════════════
+   RENDER
+═══════════════════════ */
+function renderOutfits() {
+  const out = document.getElementById('gen-output');
+  if (!currentOutfits.length) { out.innerHTML=''; return; }
+  out.innerHTML = `<div class="outfit-stack">${currentOutfits.map(o => outfitCardHTML(o)).join('')}</div>
+    ${isDemo() ? '<p class="memory-note" style="color:var(--muted);">Showing a sample wardrobe. Add your own pieces to begin.</p>' : isHybrid() ? '<p class="memory-note" style="color:var(--muted);">Using your pieces — demo items fill the gaps.</p>' : '<p class="memory-note">SYLVĒ learns from every rating.</p>'}`; 
+}
+
+function outfitCardHTML(o) {
+  const sil = [...new Set(o.items.map(i => i.sil))].join(' · ');
+  const sentHtml = o.sentence
+    ? `<div class="ocard-sentence">${o.sentence}</div>`
+    : apiKey ? `<div class="ocard-sentence loading" id="sentence-${o.id}">...</div>` : '';
+  return `
+  <div class="ocard tier-${o.tier}" id="ocard-${o.id}">
+    <div class="ocard-head">
+      <div>
+        <div class="ocard-tier">${TIER_LABEL[o.tier]}</div>
+        <div class="ocard-title">${TIER_TITLE[o.tier]}</div>
+        ${sentHtml}
+        <div class="ocard-balance">${sil}</div>
+      </div>
+    </div>
+    <div class="ocard-items">
+      ${o.items.map(item=>`
+        <div class="ocard-item">
+          <div class="ocard-thumb">
+            ${item.photo?`<img src="${item.photo}"/>`:`<span style="font-size:9px;letter-spacing:0.5px;text-transform:uppercase;color:var(--muted);font-weight:500;">${CAT_ICON[item.cat]||item.cat}</span>`}
+          </div>
+          <div class="ocard-item-info">
+            <div class="ocard-item-name">${item.name}</div>
+            <div class="ocard-item-meta">${itemNote(item)}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="ocard-actions">
+      <div class="ocard-left-actions">
+        <button class="rate-btn ${o.rating==='liked'?'liked':''}"    onclick="rateOutfit('${o.id}','liked')">This one</button>
+        <button class="rate-btn ${o.rating==='disliked'?'disliked':''}" onclick="rateOutfit('${o.id}','disliked')">Pass</button>
+        <button class="refine-btn" onclick="refineOutfit('${o.id}')">Adjust</button>
+      </div>
+      <button class="ocard-save ${o.saved?'saved':''}" onclick="saveOutfit('${o.id}')">
+        <svg viewBox="0 0 16 16" fill="${o.saved?'var(--gold)':'none'}" stroke="${o.saved?'var(--gold)':'currentColor'}" stroke-width="1.5">
+          <path d="M8 13.5l-6-6a3.5 3.5 0 015-5l1 1 1-1a3.5 3.5 0 015 5z"/>
+        </svg>
+        ${o.saved?'Saved':'Save'}
+      </button>
+    </div>
+  </div>`;
+}
+
+function renderInsufficient(gaps) {
+  document.getElementById('gen-output').innerHTML = `
+  <div class="insufficient">
+    <div class="insufficient-title">Not enough pieces yet.</div>
+    <div class="insufficient-sub">Still needed:</div>
+    <div class="gap-pills">${gaps.map(g=>`<span class="gap-pill">${g}</span>`).join('')}</div>
+  </div>`;
+}
+
+function renderWardrobe() {
+  const grid = document.getElementById('wardrobe-grid');
+  document.getElementById('w-count').textContent = wardrobe.length;
+  const list = wf==='all' ? wardrobe : wardrobe.filter(i=>i.cat===wf);
+  if (!list.length) {
+    grid.innerHTML=`<div style="grid-column:1/-1"><div class="empty-state">
+      <div class="empty-state-title">Nothing here yet.</div>
+      <div class="empty-state-sub">Add your first piece above.</div>
+    </div></div>`; return;
+  }
+  grid.innerHTML = list.map(item=>`
+    <div class="wcard" id="wcard-${item.id}">
+      <button class="wcard-del" onclick="deleteItem(event,${item.id})">✕</button>
+      ${item.photo
+        ?`<img class="wcard-photo" src="${item.photo}" alt="${item.name}"/>`
+        :`<div class="wcard-nophoto"><span class="wcard-cat-lbl">${CAT_ICON[item.cat]||item.cat}</span><span class="wcard-cat-lbl">${item.sil}</span></div>`}
+      <div class="wcard-addphoto" onclick="triggerUpload(event,${item.id})">Add photo</div>
+      <div class="wcard-body">
+        <div class="wcard-name">${item.name}</div>
+        <div class="wcard-tags">${item.color} · ${item.sil}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderSaved() {
+  const grid = document.getElementById('saved-grid');
+  document.getElementById('s-count').textContent = savedLooks.length;
+  if (!savedLooks.length) {
+    grid.innerHTML=`<div class="empty-state">
+      <div class="empty-state-title">No saved looks.</div>
+      <div class="empty-state-sub">Save looks from the generate screen.</div>
+    </div>`; return;
+  }
+  grid.innerHTML = savedLooks.slice().reverse().map(l=>`
+    <div class="saved-card">
+      <div class="saved-card-head">
+        <div>
+          <div class="saved-tier">${TIER_LABEL[l.tier]||l.tier}</div>
+          <div class="saved-title">${TIER_TITLE[l.tier]||'Saved look'}</div>
+          <div class="saved-date">${l.savedAt||''}</div>
+        </div>
+        <button class="saved-del" onclick="deleteSaved('${l.id}')">✕</button>
+      </div>
+      <div class="saved-items">${l.items.map(i=>`<span class="saved-tag">${i.name}</span>`).join('')}</div>
+      ${l.sentence?`<div class="saved-sentence">${l.sentence}</div>`:''}
+    </div>`).join('');
+}
+
+/* ═══════════════════════
+   ACTIONS
+═══════════════════════ */
+function addItem() {
+  const n = document.getElementById('item-name').value.trim(); if (!n) return;
+  wardrobe.push({
+    id: nid++,
+    name: n,
+    cat:   document.getElementById('item-cat').value,
+    sil:   document.getElementById('item-sil').value,
+    color: document.getElementById('item-color').value,
+    photo: null
+  });
+  document.getElementById('item-name').value = '';
+  persist(); renderWardrobe();
+}
+
+function deleteItem(e, id) {
+  e.stopPropagation();
+  wardrobe = wardrobe.filter(i => i.id !== id);
+  persist(); renderWardrobe();
+}
+
+function wFilter(cat, el) {
+  wf = cat;
+  document.querySelectorAll('#w-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); renderWardrobe();
+}
+
+function triggerUpload(e, id) {
+  e.stopPropagation(); pendingUpId = id;
+  const inp = document.createElement('input');
+  inp.type='file'; inp.accept='image/*';
+  inp.onchange = () => {
+    const file = inp.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      const item = wardrobe.find(i => i.id === pendingUpId);
+      if (item) { item.photo = ev.target.result; persist(); renderWardrobe(); }
+    };
+    r.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+function rateOutfit(outfitId, rating) {
+  const o = currentOutfits.find(o => String(o.id) === String(outfitId)); if (!o) return;
+  o.rating = o.rating === rating ? null : rating;
+  const hash = comboHash(o.items);
+  if (o.rating === 'liked') {
+    if (!memory.likedCombos.includes(hash)) memory.likedCombos.push(hash);
+    if (memory.likedCombos.length > 60) memory.likedCombos.shift();
+    recordPatterns(o.items, 'liked');
+  }
+  if (o.rating === 'disliked') {
+    if (!memory.dislikedCombos.includes(hash)) memory.dislikedCombos.push(hash);
+    if (memory.dislikedCombos.length > 60) memory.dislikedCombos.shift();
+    recordPatterns(o.items, 'disliked');
+  }
+  persist();
+  // Update just the rate buttons
+  const card = document.getElementById(`ocard-${outfitId}`);
+  if (!card) return;
+  const btns = card.querySelectorAll('.rate-btn');
+  btns[0].className = `rate-btn ${o.rating==='liked'?'liked':''}`;
+  btns[1].className = `rate-btn ${o.rating==='disliked'?'disliked':''}`;
+}
+
+function saveOutfit(outfitId) {
+  const o = currentOutfits.find(o => String(o.id) === String(outfitId)); if (!o) return;
+  o.saved = !o.saved;
+  if (o.saved) {
+    savedLooks.push({
+      id: o.id, tier: o.tier,
+      items: o.items.map(i=>({id:i.id,name:i.name,cat:i.cat,photo:i.photo})),
+      sentence: o.sentence,
+      savedAt: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})
+    });
+  } else {
+    savedLooks = savedLooks.filter(l => String(l.id) !== String(outfitId));
+  }
+  persist(); renderSaved();
+  const card = document.getElementById(`ocard-${outfitId}`);
+  if (!card) return;
+  const btn = card.querySelector('.ocard-save');
+  if (btn) btn.className = `ocard-save ${o.saved?'saved':''}`;
+  btn.innerHTML = `<svg viewBox="0 0 16 16" fill="${o.saved?'var(--gold)':'none'}" stroke="${o.saved?'var(--gold)':'currentColor'}" stroke-width="1.5"><path d="M8 13.5l-6-6a3.5 3.5 0 015-5l1 1 1-1a3.5 3.5 0 015 5z"/></svg>${o.saved?'Saved':'Save'}`;
+}
+
+function deleteSaved(id) {
+  savedLooks = savedLooks.filter(l => String(l.id) !== String(id));
+  const o = currentOutfits.find(o => String(o.id) === String(id));
+  if (o) o.saved = false;
+  persist(); renderSaved(); renderOutfits();
+}
+
+function saveVibe() {
+  vibe = document.getElementById('vibe-sel').value; persist();
+}
+
+function toggleConstraint(el) {
+  const group = el.dataset.group;
+  const val   = el.dataset.val;
+  // deselect others in same group
+  document.querySelectorAll(`.cchip[data-group="${group}"]`).forEach(c => {
+    if (c !== el) c.classList.remove('active');
+  });
+  el.classList.toggle('active');
+  const isNowActive = el.classList.contains('active');
+  constraints[group] = isNowActive ? val : null;
+}
+
+function saveApiKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (val && !val.startsWith('•')) { apiKey = val; localStorage.setItem('s_key', val); }
+  document.getElementById('api-area').style.display = 'none';
+}
+
+/* ═══════════════════════
+   NAV
+═══════════════════════ */
+function goScreen(id, el) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`screen-${id}`).classList.add('active');
+  const bn = document.getElementById(`bnav-${id}`);
+  if (bn) bn.classList.add('active');
+  if (id === 'saved') renderSaved();
+}
+
+/* ═══════════════════════
+   INIT
+═══════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('vibe-sel').value = vibe;
+  if (apiKey) { document.getElementById('api-area').style.display = 'none'; document.getElementById('api-toggle').style.display = 'none'; }
+
+  document.getElementById('item-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addItem();
+  });
+
+  // Paste photo support
+  document.addEventListener('paste', e => {
+    if (pendingUpId === null) return;
+    for (const item of (e.clipboardData?.items || [])) {
+      if (item.type.startsWith('image/')) {
+        const r = new FileReader();
+        r.onload = ev => {
+          const w = wardrobe.find(i => i.id === pendingUpId);
+          if (w) { w.photo = ev.target.result; persist(); renderWardrobe(); }
+        };
+        r.readAsDataURL(item.getAsFile()); break;
+      }
+    }
+  });
+
+  renderWardrobe();
+  renderSaved();
+
+  if (wardrobe.length > 0) {
+    // User has real items — check gaps and show generate if ready
+    const gaps = detectGaps();
+    if (!gaps.length) {
+      goScreen('generate', document.getElementById('bnav-generate'));
+    } else {
+      goScreen('wardrobe', document.getElementById('bnav-wardrobe'));
+    }
+  } else {
+    // Demo mode — screen is already on generate, just run it
+    generate();
+  }
+});
+</script>
+</body>
+</html>
